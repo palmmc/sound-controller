@@ -1,7 +1,88 @@
+import groovy.json.JsonSlurper
+import java.net.HttpURLConnection
+import java.net.URL
+
 plugins {
     id 'java-library'
     id 'maven-publish'
 }
+
+ext.getKofiToken = { ->
+    def prop = project.findProperty("KOFI_VERIFICATION_TOKEN")
+    if (prop) return prop.toString().trim()
+
+    def env = System.getenv("KOFI_VERIFICATION_TOKEN")
+    if (env) return env.trim()
+
+    try {
+        def envFile = project.rootProject.file(".env")
+        if (envFile.exists()) {
+            for (line in envFile.readLines()) {
+                line = line.trim()
+                if (line && !line.startsWith("#") && line.contains("=")) {
+                    def parts = line.split("=", 2)
+                    def key = parts[0].trim()
+                    def val = parts[1].trim()
+                    if (key == "KOFI_VERIFICATION_TOKEN" || key == "ORG_GRADLE_PROJECT_KOFI_VERIFICATION_TOKEN") {
+                        if ((val.startsWith("\"") && val.endsWith("\"")) || (val.startsWith("'") && val.endsWith("'"))) {
+                            val = val.substring(1, val.length() - 1)
+                        }
+                        return val.trim()
+                    }
+                }
+            }
+        }
+    } catch (Exception e) {
+        project.logger.error("Failed to parse .env file", e)
+    }
+    return null
+}
+
+ext.fetchSupporters = { ->
+    if (rootProject.hasProperty('cachedSupporters')) {
+        return rootProject.cachedSupporters
+    }
+
+    def names = []
+    def token = project.getKofiToken()
+    if (!token) {
+        rootProject.ext.cachedSupporters = names
+        return names
+    }
+
+    try {
+        def url = new URL("https://perks.palm1.dev/api/active-members")
+        def conn = (HttpURLConnection) url.openConnection()
+        conn.setRequestMethod("GET")
+        conn.setRequestProperty("Authorization", "Bearer " + token)
+        conn.setRequestProperty("Accept", "application/json")
+        conn.setRequestProperty("User-Agent", "LampLib-Gradle-Builder/1.0")
+        conn.setConnectTimeout(5000)
+        conn.setReadTimeout(5000)
+
+        if (conn.getResponseCode() == 200) {
+            def responseText = conn.getInputStream().getText("UTF-8")
+            def json = new JsonSlurper().parseText(responseText)
+            if (json && json.members) {
+                names = json.members.collect { member ->
+                    def name = member.minecraft_username
+                    if (name == null || name.toString().trim().isEmpty() || name.toString().equalsIgnoreCase("null")) {
+                        name = member.last_known_name
+                    }
+                    return name != null ? name.toString().trim() : null
+                }.findAll { it != null && !it.isEmpty() && !it.equalsIgnoreCase("PalmMC") }
+            }
+        } else {
+            project.logger.error("Failed to fetch supporters from perks API: HTTP " + conn.getResponseCode())
+        }
+    } catch (Exception e) {
+        project.logger.error("Failed to fetch active supporters dynamically.", e)
+    }
+
+    rootProject.ext.cachedSupporters = names
+    return names
+}
+
 
 base {
     archivesName = "${mod_id}-${project.name}-${minecraft_version}"
@@ -56,6 +137,16 @@ jar {
 }
 
 processResources {
+    def supporterList = project.fetchSupporters()
+    def modCredits = ""
+    if (!supporterList.isEmpty()) {
+        def contributorsHeader = "§eContributors:§r"
+        def creditsHeader = "Made possible by my lovely supporters!"
+        def formattedContributors = credits.split(", ").collect { "- ${it}"}.join("\n")
+        def formattedSupporters = supporterList.collect { "- §6${it}§r" }.join("\n")
+        modCredits = contributorsHeader + "\n" + formattedContributors + "\n\n" + creditsHeader + "\n" + formattedSupporters
+    }
+
     var expandProps = [
             'version'                      : version,
             'group'                        : project.group, //Else we target the task's group.
@@ -70,7 +161,7 @@ processResources {
             'description'                  : project.description,
             'neoforge_version'             : neoforge_version,
             'neoforge_loader_version_range': neoforge_loader_version_range,
-            'credits'                      : credits,
+            'credits'                      : modCredits,
             'java_version'                 : java_version,
             'modmenu_version'              : modmenu_version
     ]

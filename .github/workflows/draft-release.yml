@@ -81,7 +81,7 @@ jobs:
           target_commitish: ${{ github.ref_name }}
           tag_name: ${{ steps.check_version.outputs.version }}
           name: "${{ steps.check_version.outputs.mod_name }} ${{ steps.check_version.outputs.mod_version }}"
-          body: "Minor fixes."
+          body_path: build/github_changelog.md
           files: |
             fabric/build/libs/${{ steps.check_version.outputs.mod_name_dashed }}-*-fabric.jar
             neoforge/build/libs/${{ steps.check_version.outputs.mod_name_dashed }}-*-neoforge.jar
