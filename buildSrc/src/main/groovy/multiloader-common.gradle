@@ -85,7 +85,7 @@ ext.fetchSupporters = { ->
 
 
 base {
-    archivesName = "${mod_id}-${project.name}-${minecraft_version}"
+    archivesName = "${mod_name.replace(' ', '-')}-${project.name}-${minecraft_version}"
 }
 
 java {

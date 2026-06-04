@@ -19,7 +19,7 @@ jobs:
         id: properties
         run: |
           MOD_NAME=$(grep 'mod_name=' gradle.properties | cut -d'=' -f2 | xargs)
-          MOD_VERSION=$(grep 'mod_version=' gradle.properties | cut -d'=' -f2 | xargs)
+          MOD_VERSION=$(grep '^version=' gradle.properties | cut -d'=' -f2 | xargs)
           GAME_VERSIONS=$(grep 'mod_game_versions=' gradle.properties | cut -d'=' -f2 | xargs)
           JAVA_VERSION=$(grep 'java_version=' gradle.properties | cut -d'=' -f2 | xargs)
           MAIN_GAME_VERSION=$(echo $GAME_VERSIONS | cut -d',' -f1)
