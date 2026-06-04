@@ -22,11 +22,11 @@ jobs:
         id: check_version
         run: |
           # Read project properties
-          MOD_NAME=$(grep 'mod_name=' gradle.properties | cut -d'=' -f2 | xargs)
-          MOD_VERSION=$(grep 'version=' gradle.properties | cut -d'=' -f2 | xargs)
-          GAME_VERSIONS=$(grep 'mod_game_versions=' gradle.properties | cut -d'=' -f2 | xargs)
-          MODRINTH_ID=$(grep 'modrinth_id=' gradle.properties | cut -d'=' -f2 | xargs)
-          JAVA_VERSION=$(grep 'java_version=' gradle.properties | cut -d'=' -f2 | xargs)
+          MOD_NAME=$(grep '^mod_name=' gradle.properties | cut -d'=' -f2 | xargs)
+          MOD_VERSION=$(grep '^version=' gradle.properties | cut -d'=' -f2 | xargs)
+          GAME_VERSIONS=$(grep '^mod_game_versions=' gradle.properties | cut -d'=' -f2 | xargs)
+          MODRINTH_ID=$(grep '^modrinth_id=' gradle.properties | cut -d'=' -f2 | xargs)
+          JAVA_VERSION=$(grep '^java_version=' gradle.properties | cut -d'=' -f2 | xargs)
           
           if [ -z "$MODRINTH_ID" ] || [ "$MODRINTH_ID" == "null" ]; then
             echo "Modrinth ID is empty. Skipping release tasks."
@@ -85,7 +85,7 @@ jobs:
           name: "${{ steps.check_version.outputs.mod_name }} ${{ steps.check_version.outputs.mod_version }}"
           body_path: build/github_changelog.md
           files: |
-            fabric/build/libs/${{ steps.check_version.outputs.mod_name_dashed }}-*-fabric.jar
-            neoforge/build/libs/${{ steps.check_version.outputs.mod_name_dashed }}-*-neoforge.jar
+            fabric/build/libs/${{ steps.check_version.outputs.mod_name_dashed }}-fabric-*.jar
+            neoforge/build/libs/${{ steps.check_version.outputs.mod_name_dashed }}-neoforge-*.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

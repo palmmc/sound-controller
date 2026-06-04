@@ -44,11 +44,11 @@ jobs:
       - name: Read metadata
         id: metadata
         run: |
-          MOD_NAME=$(grep 'mod_name=' gradle.properties | cut -d'=' -f2 | xargs)
-          MODRINTH_ID=$(grep 'modrinth_id=' gradle.properties | cut -d'=' -f2 | xargs)
-          GAME_VERSIONS=$(grep 'mod_game_versions=' gradle.properties | cut -d'=' -f2 | xargs)
-          DEPS_FABRIC=$(grep 'modrinth_dependencies_fabric=' gradle.properties | cut -d'=' -f2 | xargs)
-          DEPS_NEOFORGE=$(grep 'modrinth_dependencies_neoforge=' gradle.properties | cut -d'=' -f2 | xargs)
+          MOD_NAME=$(grep '^mod_name=' gradle.properties | cut -d'=' -f2 | xargs)
+          MODRINTH_ID=$(grep '^modrinth_id=' gradle.properties | cut -d'=' -f2 | xargs)
+          GAME_VERSIONS=$(grep '^mod_game_versions=' gradle.properties | cut -d'=' -f2 | xargs)
+          DEPS_FABRIC=$(grep '^modrinth_dependencies_fabric=' gradle.properties | cut -d'=' -f2 | xargs)
+          DEPS_NEOFORGE=$(grep '^modrinth_dependencies_neoforge=' gradle.properties | cut -d'=' -f2 | xargs)
           
           if [ -z "$MODRINTH_ID" ] || [ "$MODRINTH_ID" == "null" ]; then
              echo "Modrinth ID is empty. Skipping publish."
