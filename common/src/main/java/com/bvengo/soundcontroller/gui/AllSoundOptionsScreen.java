@@ -5,8 +5,9 @@ import com.bvengo.soundcontroller.VolumeData;
 import com.bvengo.soundcontroller.config.VolumeConfig;
 import com.bvengo.soundcontroller.gui.buttons.ToggleButtonWidget;
 import com.bvengo.soundcontroller.gui.buttons.TriggerButtonWidget;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Tooltip;
@@ -119,7 +120,7 @@ public class AllSoundOptionsScreen extends OptionsSubScreen {
         int top = this.searchField.getBottom() + 8;
         int height = this.height - top - 36;
         if (this.volumeListWidget != null) {
-            this.lastScrollPosition = this.volumeListWidget.scrollAmount();
+            this.lastScrollPosition = this.volumeListWidget.getScrollAmount();
         }
         this.volumeListWidget = new VolumeListWidget(this.minecraft, this.width, height, top);
         this.widgetRecreated = true;
@@ -141,7 +142,7 @@ public class AllSoundOptionsScreen extends OptionsSubScreen {
     public void loadOptions() {
         double scroll = this.lastScrollPosition;
         if (this.volumeListWidget != null && !this.widgetRecreated) {
-            scroll = this.volumeListWidget.scrollAmount();
+            scroll = this.volumeListWidget.getScrollAmount();
         }
         this.volumeListWidget.clearEntries();
 
@@ -162,7 +163,7 @@ public class AllSoundOptionsScreen extends OptionsSubScreen {
                 return !config.getDisabledCategories().contains(category);
             })
             .forEach(volumeData -> {
-                net.minecraft.resources.Identifier id = volumeData.getId();
+                net.minecraft.resources.ResourceLocation id = volumeData.getId();
                 String namespace = id.getNamespace();
                 String path = id.getPath();
                 String[] segments = path.split("\\.");
@@ -275,12 +276,12 @@ public class AllSoundOptionsScreen extends OptionsSubScreen {
     public void removed() {
         config.save();
         if (this.volumeListWidget != null) {
-            this.lastScrollPosition = this.volumeListWidget.scrollAmount();
+            this.lastScrollPosition = this.volumeListWidget.getScrollAmount();
         }
     }
 
     @Override
-    public void resize(int width, int height) {
+    public void resize(Minecraft client, int width, int height) {
         // Cache search before clearing
         String search = this.searchField.getValue();
 
@@ -295,11 +296,11 @@ public class AllSoundOptionsScreen extends OptionsSubScreen {
     }
 
     @Override
-    public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
-        super.extractRenderState(context, mouseX, mouseY, delta);
-        context.centeredText(this.font, this.title, this.width / 2, 20, 0xFFFFFFFF);
-        context.text(this.font, SEARCH_FIELD_TITLE, 80, 24, 0xFFA0A0A0);
-        this.searchField.extractRenderState(context, mouseX, mouseY, delta);
+    public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
+        super.render(context, mouseX, mouseY, delta);
+        context.drawCenteredString(this.font, this.title, this.width / 2, 20, 0xFFFFFFFF);
+        context.drawString(this.font, SEARCH_FIELD_TITLE, 80, 24, 0xFFA0A0A0);
+        this.searchField.render(context, mouseX, mouseY, delta);
     }
 
     public static class Node {

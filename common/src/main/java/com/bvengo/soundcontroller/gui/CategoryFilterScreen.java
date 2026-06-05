@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Checkbox;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
@@ -81,9 +81,9 @@ public class CategoryFilterScreen extends Screen {
     }
 
     @Override
-    public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
-        super.extractRenderState(context, mouseX, mouseY, delta);
-        context.centeredText(this.font, this.title, this.width / 2, 20, 0xFFFFFFFF);
+    public void render(net.minecraft.client.gui.GuiGraphics context, int mouseX, int mouseY, float delta) {
+        super.render(context, mouseX, mouseY, delta);
+        context.drawCenteredString(this.font, this.title, this.width / 2, 20, 0xFFFFFFFF);
     }
 
     class CategoryListWidget extends ContainerObjectSelectionList<CategoryEntry> {
@@ -125,10 +125,10 @@ public class CategoryFilterScreen extends Screen {
         }
 
         @Override
-        public void extractContent(GuiGraphicsExtractor context, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+        public void render(net.minecraft.client.gui.GuiGraphics context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float partialTick) {
             int left = (CategoryFilterScreen.this.width - 220) / 2;
-            this.checkbox.setPosition(left + 10, getY());
-            this.checkbox.extractRenderState(context, mouseX, mouseY, tickDelta);
+            this.checkbox.setPosition(left + 10, y);
+            this.checkbox.render(context, mouseX, mouseY, partialTick);
         }
 
         @Override

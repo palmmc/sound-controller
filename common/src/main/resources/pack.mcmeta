@@ -1,8 +1,8 @@
 {
     "pack": {
         "description": "Sound Controller Assets",
-        "pack_format": 84,
-        "min_format": 84,
-        "max_format": 84
+        "pack_format": 34,
+        "min_format": 34,
+        "max_format": 34
     }
 }

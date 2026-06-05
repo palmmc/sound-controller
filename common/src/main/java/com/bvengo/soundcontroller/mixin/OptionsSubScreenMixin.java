@@ -2,8 +2,6 @@ package com.bvengo.soundcontroller.mixin;
 
 import com.bvengo.soundcontroller.Translations;
 import com.bvengo.soundcontroller.gui.AllSoundOptionsScreen;
-import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
 import net.minecraft.client.gui.components.Button;
@@ -30,14 +28,12 @@ public class OptionsSubScreenMixin {
 
     @Shadow @Final protected Options options;
 
-    @WrapMethod(method = "addFooter")
-    private void replaceDoneButton(Operation<Void> original) {
-
+    @Inject(method = "addFooter", at = @At("HEAD"), cancellable = true)
+    private void replaceDoneButton(CallbackInfo ci) {
 		//noinspection ConstantValue
 		if (!((Object)this instanceof SoundOptionsScreen)) {
             return;
         }
-
 
         Minecraft client = Minecraft.getInstance();
 
@@ -47,6 +43,8 @@ public class OptionsSubScreenMixin {
         AllSoundOptionsScreen volumeOptionsScreen = new AllSoundOptionsScreen((SoundOptionsScreen)(Object)this, this.options);
         soundcontroller$addLayoutButton(client, directionalLayoutWidget, Translations.SOUND_SCREEN_TITLE, volumeOptionsScreen);
         soundcontroller$addLayoutButton(client, directionalLayoutWidget, CommonComponents.GUI_DONE, this.lastScreen);
+        
+        ci.cancel();
     }
 
     @Unique

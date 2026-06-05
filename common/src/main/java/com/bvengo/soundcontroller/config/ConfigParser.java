@@ -4,7 +4,7 @@ import com.bvengo.soundcontroller.SoundController;
 import com.bvengo.soundcontroller.VolumeData;
 import com.google.gson.*;
 import com.bvengo.soundcontroller.platform.Services;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import java.io.*;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -162,8 +162,8 @@ public class ConfigParser {
 	 * @param soundId The sound ID to add.
 	 * @param volume The volume to add.
 	 */
-	private static void addVolumeData(HashMap<Identifier, VolumeData> soundVolumes, String soundId, float volume) {
-		Identifier id = Identifier.tryParse(soundId);
+	private static void addVolumeData(HashMap<ResourceLocation, VolumeData> soundVolumes, String soundId, float volume) {
+		ResourceLocation id = ResourceLocation.tryParse(soundId);
 
 		if (soundVolumes.containsKey(id)) {
 			SoundController.LOGGER.warn("Duplicate sound ID found in config: {}. Taking first only.", soundId);
@@ -210,7 +210,7 @@ public class ConfigParser {
 			}
 		}
 
-		HashMap<Identifier, VolumeData> soundVolumes = config.getVolumes();
+		HashMap<ResourceLocation, VolumeData> soundVolumes = config.getVolumes();
 		JsonArray sounds = jsonObject.getAsJsonArray("sounds");
 		for (JsonElement soundElement : sounds) {
 			JsonObject soundObject = soundElement.getAsJsonObject();
@@ -252,7 +252,7 @@ public class ConfigParser {
 	 * @param jsonObject The JSON object to parse.
 	 */
 	private static void parseConfigUnversioned(VolumeConfig config, JsonObject jsonObject) {
-		HashMap<Identifier, VolumeData> soundVolumes = config.getVolumes();
+		HashMap<ResourceLocation, VolumeData> soundVolumes = config.getVolumes();
 
 		// Iterate over each entry in the JSON object assuming each key is a sound ID
 		jsonObject.entrySet().forEach(entry -> {

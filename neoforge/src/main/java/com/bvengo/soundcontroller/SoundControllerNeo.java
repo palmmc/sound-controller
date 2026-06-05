@@ -17,7 +17,7 @@ public class SoundControllerNeo {
         // Initialize common logic
         SoundController.init();
 
-        if (FMLEnvironment.getDist() == Dist.CLIENT) {
+        if (FMLEnvironment.dist == Dist.CLIENT) {
             // Register neoforge config screen
             container.registerExtensionPoint(IConfigScreenFactory.class, (modContainer, parentScreen) -> {
                 return new AllSoundOptionsScreen(parentScreen, Minecraft.getInstance().options);

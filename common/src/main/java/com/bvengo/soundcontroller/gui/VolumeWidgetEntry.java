@@ -9,7 +9,7 @@ import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.OptionInstance;
 import net.minecraft.client.Options;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList.Entry;
 import net.minecraft.client.gui.components.Tooltip;
@@ -123,18 +123,18 @@ public class VolumeWidgetEntry extends VolumeListEntry {
     }
 
     @Override
-    public void extractContent(GuiGraphicsExtractor context, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+    public void render(net.minecraft.client.gui.GuiGraphics context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float partialTick) {
         int leftSide = (this.screen.width - totalWidth) / 2;
         int indent = depth * 12;
 
-        this.volumeSlider.setPosition(leftSide + indent, getY());
-        this.volumeSlider.extractRenderState(context, mouseX, mouseY, tickDelta);
+        this.volumeSlider.setPosition(leftSide + indent, y);
+        this.volumeSlider.render(context, mouseX, mouseY, partialTick);
 
-        this.playSoundButton.setPosition(leftSide + sliderWidth + paddingAfterSearch, getY());
-        this.playSoundButton.extractRenderState(context, mouseX, mouseY, tickDelta);
+        this.playSoundButton.setPosition(leftSide + sliderWidth + paddingAfterSearch, y);
+        this.playSoundButton.render(context, mouseX, mouseY, partialTick);
 
-        this.resetButton.setPosition(playSoundButton.getRight() + paddingBetweenButtons, getY());
-        this.resetButton.extractRenderState(context, mouseX, mouseY, tickDelta);
+        this.resetButton.setPosition(playSoundButton.getRight() + paddingBetweenButtons, y);
+        this.resetButton.render(context, mouseX, mouseY, partialTick);
     }
 
     @Override

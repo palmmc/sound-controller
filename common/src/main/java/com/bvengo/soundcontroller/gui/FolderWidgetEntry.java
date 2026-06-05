@@ -3,10 +3,9 @@ package com.bvengo.soundcontroller.gui;
 import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
-import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
@@ -29,22 +28,22 @@ public class FolderWidgetEntry extends VolumeListEntry {
     }
 
     @Override
-    public void extractContent(GuiGraphicsExtractor context, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+    public void render(net.minecraft.client.gui.GuiGraphics context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float partialTick) {
         int screenWidth = Minecraft.getInstance().getWindow().getGuiScaledWidth();
         int totalWidth = VolumeWidgetEntry.totalWidth;
         int left = (screenWidth - totalWidth) / 2;
         int indent = depth * 12;
 
         int backgroundColor = hovered ? 0x22FFFFFF : 0x0CFFFFFF;
-        context.fill(left + indent, getY(), left + totalWidth, getY() + 20, backgroundColor);
+        context.fill(left + indent, y, left + totalWidth, y + 20, backgroundColor);
 
         String prefix = isExpanded ? "▼ " : "▶ ";
-        context.text(font, Component.literal(prefix + name), left + indent + 6, getY() + 6, 0xFFFFFFFF);
+        context.drawString(font, Component.literal(prefix + name), left + indent + 6, y + 6, 0xFFFFFFFF);
     }
 
     @Override
-    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
-        if (event.button() == 0) {
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (button == 0) {
             Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(
                     isExpanded ? SoundEvents.WOODEN_PRESSURE_PLATE_CLICK_OFF : SoundEvents.WOODEN_PRESSURE_PLATE_CLICK_ON, 1.0F));
             toggleAction.run();
