@@ -37,7 +37,7 @@ jobs:
           # Get the primary version
           MAIN_GAME_VERSION=$(echo $GAME_VERSIONS | cut -d',' -f1)
           TARGET_TAG="${MOD_VERSION}+${MAIN_GAME_VERSION}"
-          MOD_NAME_DASHED=$(echo "$MOD_NAME" | sed 's/ /-/g')
+          MOD_NAME_DASHED=$(echo "$MOD_NAME" | sed 's/ /-/g' | sed 's/[^a-zA-Z0-9_-]//g')
           
           if gh release view "$TARGET_TAG" > /dev/null 2>&1; then
              echo "Found existing release on GitHub for $TARGET_TAG. Skipping."
